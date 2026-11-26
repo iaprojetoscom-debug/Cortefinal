@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corte Já - Orçamento</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #0d1610;
+      color: #f0fdf4;
+      display: flex;
+      justify-content: center;
+      padding: 12px;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      background-color: #15241b;
+      border: 1px solid #22c55e44;
+      border-radius: 14px;
+      padding: 16px;
+      height: fit-content;
+    }
+
+    h1 {
+      color: #4ade80;
+      font-size: 1.3rem;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .grupo {
+      margin-bottom: 12px;
+    }
+
+    .linha {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: #bbf7d0;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #2e4a38;
+      background-color: #0d1610;
+      color: #ffffff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: #4ade80;
+    }
+
+    .botoes-servico {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .btn-opcao {
+      padding: 11px 8px;
+      border-radius: 8px;
+      border: 1px solid #2e4a38;
+      background-color: #0d1610;
+      color: #a7f3d0;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .btn-opcao.ativo {
+      background-color: #22c55e;
+      color: #052e16;
+      border-color: #4ade80;
+    }
+
+    .painel-valor {
+      background-color: #0d1610;
+      border: 1px solid #4ade8066;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .painel-valor span {
+      display: block;
+      font-size: 0.8rem;
+      color: #a7f3d0;
+    }
+
+    .painel-valor strong {
+      font-size: 1.5rem;
+      color: #4ade80;
+    }
+
+    .box-pix {
+      background-color: #0d1610;
+      border: 1px dashed #22c55e66;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pix-info {
+      font-size: 0.82rem;
+      color: #dcfce7;
+    }
+
+    .pix-info strong {
+      display: block;
+      color: #4ade80;
+      font-size: 0.92rem;
+      margin-top: 2px;
+    }
+
+    .btn-copiar {
+      padding: 8px 12px;
+      background-color: #1e3527;
+      color: #4ade80;
+      border: 1px solid #4ade8055;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-copiar:active {
+      background-color: #22c55e;
+      color: #052e16;
+    }
+
+    .btn-enviar {
+      width: 100%;
+      padding: 14px;
+      background-color: #22c55e;
+      color: #052e16;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .btn-enviar:active {
+      background-color: #16a34a;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🌿 Corte Já - Orçamento</h1>
+
+    <div class="grupo">
+      <label for="nome">Seu Nome</label>
+      <input type="text" id="nome" placeholder="Digite seu nome">
+    </div>
+
+    <div class="linha">
+      <div>
+        <label for="tipoLocal">Tipo de Área</label>
+        <select id="tipoLocal" onchange="calcular()">
+          <option value="1.20" data-nome="Casa">Casa (R$ 1,20/m²)</option>
+          <option value="1.50" data-nome="Pousada">Pousada (R$ 1,50/m²)</option>
+          <option value="0.80" data-nome="Pomar">Pomar (R$ 0,80/m²)</option>
+          <option value="1.20" data-nome="Terreno / Outros">Terreno/Outros (R$ 1,20/m²)</option>
+        </select>
+      </div>
+      <div>
+        <label for="metros">Área aprox. (m²)</label>
+        <input type="number" id="metros" placeholder="Ex: 100" min="1" oninput="calcular()">
+      </div>
+    </div>
+
+    <div class="grupo">
+      <label>O que você deseja?</label>
+      <div class="botoes-servico">
+        <div id="btnSimples" class="btn-opcao ativo" onclick="selecionarServico(false)">
+          ✂️ Corte Simples
+        </div>
+        <div id="btnLimpeza" class="btn-opcao" onclick="selecionarServico(true)">
+          🧹 Corte + Limpeza<br><small>(+ R$ 0,30/m²)</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="grupo">
+      <label for="obs">Observação (opcional)</label>
+      <input type="text" id="obs" placeholder="Ex: Mato alto, horário, etc.">
+    </div>
+
+    <div class="painel-valor">
+      <span>Estimativa do Serviço</span>
+      <strong id="valorTotal">R$ 0,00</strong>
+    </div>
+
+    <div class="box-pix">
+      <div class="pix-info">
+        <span>Chave Pix (Sicoob):</span>
+        <strong>11341085910</strong>
+      </div>
+      <button type="button" class="btn-copiar" id="btnCopiar" onclick="copiarPix()">📋 Copiar Pix</button>
+    </div>
+
+    <button type="button" class="btn-enviar" onclick="enviarWhatsApp()">📲 Enviar Pedido no WhatsApp</button>
+  </div>
+
+  <script>
+    let comLimpeza = false;
+
+    function selecionarServico(incluirLimpeza) {
+      comLimpeza = incluirLimpeza;
+      document.getElementById("btnSimples").classList.toggle("ativo", !incluirLimpeza);
+      document.getElementById("btnLimpeza").classList.toggle("ativo", incluirLimpeza);
+      calcular();
+    }
+
+    function formatarMoeda(valor) {
+      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function calcular() {
+      const select = document.getElementById("tipoLocal");
+      const precoBase = parseFloat(select.value);
+      const metros = parseFloat(document.getElementById("metros").value) || 0;
+
+      const precoMetro = comLimpeza ? precoBase + 0.30 : precoBase;
+      const total = metros * precoMetro;
+
+      document.getElementById("valorTotal").innerText = formatarMoeda(total);
+      return { total, metros };
+    }
+
+    function copiarPix() {
+      const chave = "11341085910";
+      navigator.clipboard.writeText(chave).then(() => {
+        const btn = document.getElementById("btnCopiar");
+        btn.innerText = "✅ Copiado!";
+        setTimeout(() => {
+          btn.innerText = "📋 Copiar Pix";
+        }, 2000);
+      });
+    }
+
+    function enviarWhatsApp() {
+      const telefone = "5549991810323";
+
+      const nome = document.getElementById("nome").value.trim() || "Cliente";
+      const select = document.getElementById("tipoLocal");
+      const tipoNome = select.options[select.selectedIndex].getAttribute("data-nome");
+      const obs = document.getElementById("obs").value.trim();
+
+      const calc = calcular();
+      const servicoTexto = comLimpeza ? "Corte + Limpeza" : "Corte Simples";
+      const areaTexto = calc.metros > 0 ? `${calc.metros} m²` : "A definir por foto";
+      const valorTexto = calc.metros > 0 ? formatarMoeda(calc.total) : "A combinar";
+
+      let msg = `*🌿 PEDIDO - CORTE JÁ*\n`;
+      msg += `*Cliente:* ${nome}\n`;
+      msg += `*Local:* ${tipoNome} | ${areaTexto}\n`;
+      msg += `*Serviço:* ${servicoTexto}\n`;
+      msg += `*Estimativa:* ${valorTexto}\n`;
+
+      if (obs) {
+        msg += `*Obs:* ${obs}\n`;
+      }
+
+      const url = `https://wa.me/${telefone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, "_blank");
+    }
+  </script>
+
+</body>
+</html>
